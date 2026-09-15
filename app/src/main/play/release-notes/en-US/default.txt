@@ -1,5 +1,5 @@
-• Site settings: per-site Images switch (#634) and on/off switches for custom CSS and post-load JS
-• Theming: toolbar edge border, load-progress line, and dialog dividers follow the theme
-• Security fix: untrusted pages can no longer use the translation bridge to spend your AI API key
-• Favicons are stored under the correct host; long-press menus open above the finger
-• Bookmark dialog fixes (themed edit dialog, action bar stays visible)
+• Per-site WebView dark-mode and page-height overrides
+• AI answers render rich Markdown, including images and Mermaid diagrams
+• WebView tabs recover automatically if the renderer dies
+• Faster, smaller ad blocker with stronger protection against malformed filter data
+• Fixes for closed-tab focus, Reader-mode lead images, EPUB titles, and redirected favicons

@@ -79,6 +79,35 @@
 <h2 id="changelog">Changelog</h2>
 
 <div class="changelog-version">
+<h3>16.7.0</h3>
+<h4>Features</h4>
+<ul>
+<li>Site settings: override WebView dark mode and reserve page height for individual sites</li>
+<li>AI responses render rich Markdown, including inline images and Mermaid diagrams</li>
+<li>AI: configure a dedicated Gemini model and thinking setting for YouTube transcript requests</li>
+<li>Downloads: non-Play builds can hand downloaded APKs to the system package installer again; the Play build continues to open Downloads to comply with Play policy</li>
+</ul>
+<h4>Improvements</h4>
+<ul>
+<li>Ad blocking: native CSS <code>:has()</code> support replaces the ExtendedCss JavaScript library, improving speed and reducing APK size</li>
+<li>Theming: remaining dialogs, buttons, and checkboxes consistently use themed borders and colors</li>
+<li>Performance: reduce memory use, speed up page loading, and shrink the APK</li>
+</ul>
+<h4>Fixes</h4>
+<ul>
+<li>WebView: rebuild a tab after its renderer dies instead of losing the tab</li>
+<li>Tabs: keep focus synchronized after closing a tab</li>
+<li>Reader mode: restore a lead image when it sits outside the article container (#635)</li>
+<li>EPUB: avoid pruning valid titles</li>
+<li>Favicons remain attached to bookmarks across cross-host redirects</li>
+<li>Blocked image requests receive transparent responses instead of broken-image placeholders</li>
+<li>Ad blocking: harden the native/JNI parser against corrupt or hostile filter data</li>
+<li>Theming: remove the built-in AlertDialog border added by Boox firmware</li>
+<li>Translation: remove the no-longer-supported Naver and Papago providers</li>
+</ul>
+</div>
+
+<div class="changelog-version">
 <h3>16.6.0</h3>
 <h4>Features</h4>
 <ul>

@@ -80,6 +80,35 @@
 <h2 id="changelog">更新日誌</h2>
 
 <div class="changelog-version">
+<h3>16.7.0</h3>
+<h4>新功能</h4>
+<ul>
+<li>網站設定：可針對個別網站覆寫 WebView 深色模式與頁面預留高度</li>
+<li>AI 回答支援豐富 Markdown，包含內嵌圖片與 Mermaid 圖表</li>
+<li>AI：可為 YouTube 字幕請求設定專用的 Gemini 模型與思考設定</li>
+<li>下載：非 Play 版本可再次將下載的 APK 交給系統安裝程式；Play 版本為符合政策，仍會開啟「下載」資料夾</li>
+</ul>
+<h4>改善</h4>
+<ul>
+<li>廣告封鎖：以原生 CSS <code>:has()</code> 支援取代 ExtendedCss JavaScript 函式庫，提升速度並縮小 APK</li>
+<li>佈景主題：其餘對話框、按鈕與核取方塊一致採用主題邊框和色彩</li>
+<li>效能：降低記憶體使用量、加快網頁載入並縮小 APK</li>
+</ul>
+<h4>修正</h4>
+<ul>
+<li>WebView：渲染程序終止後會重建分頁，不再遺失分頁</li>
+<li>分頁：關閉分頁後正確同步焦點</li>
+<li>閱讀模式：首圖位於文章容器外時仍會顯示（#635）</li>
+<li>EPUB：不再錯誤移除有效標題</li>
+<li>網站圖示在跨網域重新導向後仍正確保留在書籤上</li>
+<li>被封鎖的圖片請求改為透明回應，不再顯示損毀圖片預留位置</li>
+<li>廣告封鎖：強化原生／JNI 解析器，處理損毀或惡意過濾規則</li>
+<li>佈景主題：移除 Boox 韌體加上的 AlertDialog 內建邊框</li>
+<li>翻譯：移除已不再支援的 Naver 與 Papago 服務</li>
+</ul>
+</div>
+
+<div class="changelog-version">
 <h3>16.6.0</h3>
 <h4>新功能</h4>
 <ul>

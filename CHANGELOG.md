@@ -1,3 +1,28 @@
+### 16.7.0
+#### Features
+* Site settings: override WebView dark mode and reserve page height for individual sites
+* AI responses render rich Markdown, including inline images and Mermaid diagrams
+* AI: configure a dedicated Gemini model and thinking setting for YouTube transcript requests
+* Downloads: non-Play builds can hand downloaded APKs to the system package installer again; the Play build continues to open Downloads to comply with Play policy
+
+#### Improvements
+* Ad blocking: native CSS `:has()` support replaces the ExtendedCss JavaScript library, improving speed and reducing APK size
+* Theming: remaining dialogs, buttons, and checkboxes consistently use themed borders and colors
+* Performance: reduce memory use, speed up page loading, and shrink the APK
+
+#### Fixes
+* WebView: rebuild a tab after its renderer dies instead of losing the tab
+* Tabs: keep focus synchronized after closing a tab
+* Reader mode: restore a lead image when it sits outside the article container (#635)
+* EPUB: avoid pruning valid titles
+* Favicons remain attached to bookmarks across cross-host redirects
+* Blocked image requests receive transparent responses instead of broken-image placeholders
+* Ad blocking: harden the native/JNI parser against corrupt or hostile filter data
+* Theming: remove the built-in AlertDialog border added by Boox firmware
+* Translation: remove the no-longer-supported Naver and Papago providers
+
+---
+
 ### 16.6.0
 #### Features
 * Site settings: per-site Images switch — turn image loading off for just one site, resolved through the same path → host → global rule chain and applied on every navigation within the site (#634)

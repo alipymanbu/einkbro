@@ -505,6 +505,10 @@
     <string name="content_adjustment">Content Adjustment</string>
     <string name="share_save"><![CDATA[Share & Save]]></string>
     <string name="setting_title_chat_gpt">Gen AI</string>
+    <string name="setting_title_jev_api_key">Jev API key</string>
+    <string name="setting_summary_jev_api_key">TypeSafe key for Smart Reader Mode</string>
+    <string name="setting_title_smart_reader_mode">Smart Reader Mode extraction</string>
+    <string name="setting_summary_smart_reader_mode">Send page block snippets to Jev to filter Reader Mode content. Requires a Jev API key.</string>
     <string name="setting_title_edit_gpt_api_key">OpenAI key</string>
     <string name="setting_summary_edit_gpt_api_key">Input key in order to use this feature</string>
     <string name="gpt_api_key_not_set">Add OpenAI key in Settings</string>

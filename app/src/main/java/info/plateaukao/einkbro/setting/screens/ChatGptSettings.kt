@@ -86,6 +86,12 @@ fun buildChatGptSettingItems(deps: SettingScreenDeps): List<SettingItemInterface
             R.string.google_gemini,
             destination = SettingRoute.GptGemini,
         ),
+        ValueSettingItem(
+            R.string.setting_title_jev_api_key,
+            0,
+            R.string.setting_summary_jev_api_key,
+            config.ai::jevApiKey,
+        ),
         DividerSettingItem(),
         ActionSettingItem(
             R.string.setting_title_gpt_action_list,

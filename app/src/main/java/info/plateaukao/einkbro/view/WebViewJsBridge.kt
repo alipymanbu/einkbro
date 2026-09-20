@@ -288,9 +288,14 @@ class WebViewJsBridge(private val webView: WebView) {
         webView.evaluateJavascript(loadAssetFile("disable_reader_mode.js"), null)
     }
 
-    fun replaceWithReaderModeBody(keepExtraContent: Boolean, callback: ValueCallback<String>?) {
+    fun collectSmartReaderCandidates(callback: ValueCallback<String>) {
+        evaluateJsFile("smart_reader_candidates.js", false, callback)
+    }
+
+    fun replaceWithReaderModeBody(keepExtraContent: Boolean, callback: ValueCallback<String>?, excludedBlocks: List<String> = emptyList()) {
+        val exclusions = org.json.JSONArray(excludedBlocks).toString()
         webView.evaluateJavascript(
-            "(function() { ${replaceWithReaderModeBodyJs(keepExtraContent)} })();",
+            "(function() { ${replaceWithReaderModeBodyJs(keepExtraContent, exclusions)} })();",
             callback
         )
     }
@@ -344,10 +349,20 @@ class WebViewJsBridge(private val webView: WebView) {
             }
         }
 
-        private fun replaceWithReaderModeBodyJs(keepExtraContent: Boolean) = """
+        private fun replaceWithReaderModeBodyJs(keepExtraContent: Boolean, exclusions: String) = """
             ${if (keepExtraContent) "inlineCodeStyles();" else ""}
             var scopedDoc = (typeof getReadabilityScopedDocument === 'function') ? getReadabilityScopedDocument() : null;
             var documentClone = scopedDoc || document.cloneNode(true);
+            var excluded = $exclusions;
+            excluded.forEach(function(id) {
+                var node = documentClone.querySelector('[data-eb-smart-reader="' + id + '"]');
+                if (node && !node.closest('article, [role="article"]') &&
+                    !node.matches('main, [role="main"]') &&
+                    !node.querySelector('article, [role="article"], main, [role="main"]')) node.remove();
+            });
+            document.querySelectorAll('[data-eb-smart-reader]').forEach(function(node) {
+                node.removeAttribute('data-eb-smart-reader');
+            });
             var article = new Readability(documentClone, ${readabilityOptions(keepExtraContent)}).parse();
             document.innerHTMLCache = document.body.innerHTML;
 

@@ -4,8 +4,13 @@ import android.content.res.Configuration
 import info.plateaukao.einkbro.preference.ConfigManager
 import info.plateaukao.einkbro.preference.EinkImageMode
 import info.plateaukao.einkbro.preference.FontType
+import info.plateaukao.einkbro.data.remote.JevReaderRepository
 import info.plateaukao.einkbro.unit.HelperUnit.loadAssetFile
 import java.util.Locale
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class WebViewReaderHelper(
     private val webView: EBWebView,
@@ -20,6 +25,8 @@ class WebViewReaderHelper(
     // disabling vertical read knows to leave reader mode entirely rather than
     // fall back to the horizontal reader view the user hadn't asked for.
     private var verticalActivatedReaderMode = false
+    private val smartReaderScope = CoroutineScope(Dispatchers.Main)
+    private var readerRequest = 0
 
     fun toggleVerticalRead() {
         isVerticalRead = !isVerticalRead
@@ -64,6 +71,7 @@ class WebViewReaderHelper(
     fun shouldUseReaderFont(): Boolean = isReaderModeOn || webView.isTranslatePage
 
     fun toggleReaderMode(isVertical: Boolean = false) {
+        val request = ++readerRequest
         isReaderModeOn = !isReaderModeOn
         if (isReaderModeOn) {
             // Keep the vertical flag in lockstep with the mode we're entering, so
@@ -71,12 +79,33 @@ class WebViewReaderHelper(
             // dialog re-parsing the page) preserve vertical read.
             isVerticalRead = isVertical
             webView.jsBridge.evaluateMozReaderModeJs(isVertical) {
-                webView.jsBridge.replaceWithReaderModeBody(config.display.readerKeepExtraContent) { _ ->
-                    if (isVertical) {
-                        applyVerticalTextProcessing()
-                    } else {
-                        updateReaderSettingsStyle()
+                val render: (List<String>) -> Unit = { excluded ->
+                    if (request == readerRequest && isReaderModeOn && isVerticalRead == isVertical) {
+                        webView.jsBridge.replaceWithReaderModeBody(config.display.readerKeepExtraContent, { _ ->
+                            if (isVertical) {
+                                applyVerticalTextProcessing()
+                            } else {
+                                updateReaderSettingsStyle()
+                            }
+                        }, excluded)
                     }
+                }
+                val key = config.ai.jevApiKey.trim()
+                if (config.ai.smartReaderMode && key.isNotEmpty()) {
+                    webView.jsBridge.collectSmartReaderCandidates { raw ->
+                        val snapshot = try { JSONObject(JSONObject("{\"value\":$raw}").getString("value")) } catch (_: Exception) { null }
+                        if (snapshot == null) {
+                            render(emptyList())
+                        } else {
+                            val pageUrl = webView.url
+                            smartReaderScope.launch {
+                                val excluded = JevReaderRepository().excludedBlocks(key, snapshot)
+                                if (webView.url == pageUrl) render(excluded)
+                            }
+                        }
+                    }
+                } else {
+                    render(emptyList())
                 }
             }
             webView.settings.textZoom = config.display.readerFontSize

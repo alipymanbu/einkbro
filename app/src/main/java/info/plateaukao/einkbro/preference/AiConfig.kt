@@ -10,6 +10,8 @@ import kotlinx.serialization.json.Json
 class AiConfig(private val sp: SharedPreferences) {
 
     var gptApiKey by StringPreference(sp, K_GPT_API_KEY, "")
+    var jevApiKey by StringPreference(sp, K_JEV_API_KEY, "")
+    var smartReaderMode by BooleanPreference(sp, K_SMART_READER_MODE, false)
 
     var geminiApiKey by StringPreference(sp, K_GEMINI_API_KEY, "")
 
@@ -229,6 +231,8 @@ class AiConfig(private val sp: SharedPreferences) {
         // 100/101 migrate through the legacy branch while newer values stay aligned.
         private const val EXTERNAL_SEARCH_METHOD_VERSION = 101
         const val K_GPT_API_KEY = "sp_gpt_api_key"
+        const val K_JEV_API_KEY = "sp_jev_api_key"
+        const val K_SMART_READER_MODE = "sp_smart_reader_mode"
         const val K_GEMINI_API_KEY = "sp_gemini_api_key"
         const val K_GPT_SYSTEM_PROMPT = "sp_gpt_system_prompt"
         const val K_GPT_USER_PROMPT_PREFIX = "sp_gpt_user_prompt"

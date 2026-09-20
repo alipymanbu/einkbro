@@ -1,4 +1,7 @@
 (function () {
+    document.querySelectorAll('[data-eb-smart-reader]').forEach(function (node) {
+        node.removeAttribute('data-eb-smart-reader');
+    });
     if (typeof enableSiteStyleSheets === 'function') enableSiteStyleSheets();
     // innerHTMLCache is an expando saved by reader mode before it replaced the
     // body; a document that never entered reader mode doesn't have it, and

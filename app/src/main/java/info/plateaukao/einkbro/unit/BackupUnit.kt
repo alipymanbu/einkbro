@@ -1219,6 +1219,8 @@ class BackupUnit(
         private val GPT_PREF_KEYS = listOf(
             "sp_gpt_api_key",
             "sp_gemini_api_key",
+            "sp_jev_api_key",
+            "sp_smart_reader_mode",
             "sp_gpt_system_prompt",
             "sp_gpt_user_prompt",
             "sp_gpt_user_prompt_web_page",
@@ -1271,5 +1273,4 @@ private fun JSONObject.toBookmark(): Bookmark =
         optInt("parent"),
         optInt("order")
     ).apply { id = optInt("id") }
-
 

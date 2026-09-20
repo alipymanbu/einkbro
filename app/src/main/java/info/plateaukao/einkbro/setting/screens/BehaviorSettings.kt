@@ -10,6 +10,13 @@ import info.plateaukao.einkbro.setting.SettingItemInterface
 fun buildBehaviorSettingItems(deps: SettingScreenDeps): List<SettingItemInterface> {
     val config = deps.config
     return listOf(
+        BooleanSettingItem(
+            R.string.setting_title_smart_reader_mode,
+            0,
+            R.string.setting_summary_smart_reader_mode,
+            config.ai::smartReaderMode,
+        ),
+        DividerSettingItem(),
         // Tab behavior
         BooleanSettingItem(
             R.string.setting_title_saveTabs,

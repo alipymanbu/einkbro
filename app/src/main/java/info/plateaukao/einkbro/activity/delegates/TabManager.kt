@@ -216,6 +216,8 @@ class TabManager(
     }
 
     fun showAlbum(controller: AlbumController) {
+        // A tab-list callback can outlive the tab it refers to.
+        if (browserContainer.indexOf(controller) < 0) return
         @Suppress("NAME_SHADOWING")
         val controller = materializeIfNeeded(controller)
         val currentAlbumController = state.currentAlbumController
@@ -253,6 +255,11 @@ class TabManager(
         controllerView.visibility = View.VISIBLE
 
         state.currentAlbumController = (controller)
+        // Activation can load a restored URL and trigger callbacks immediately.
+        // Publish the navigation target before any of those callbacks run.
+        val newEbWebView = controller as EBWebView
+        state.ebWebView = newEbWebView
+        keyHandlerSetWebView(newEbWebView)
         controller.activate()
 
         updateSavedAlbumInfo()
@@ -260,10 +267,6 @@ class TabManager(
 
         state.progressBar.visibility = View.GONE
         state.progressBarVertical.visibility = View.GONE
-        val newEbWebView = controller as EBWebView
-        state.ebWebView = (newEbWebView)
-        keyHandlerSetWebView(newEbWebView)
-
         updateTitle()
         newEbWebView.updatePageInfo()
         // Re-apply the current style config: font/style changes made while this
@@ -280,13 +283,19 @@ class TabManager(
 
     fun removeAlbum(albumController: AlbumController, showHome: Boolean) {
         closeTabConfirmation {
+            val removeIndex = browserContainer.indexOf(albumController)
+            if (removeIndex < 0) return@closeTabConfirmation
+            val wasCurrent = state.currentAlbumController === albumController
             if (config.tab.isSaveHistoryWhenClose() && !albumController.isAIPage) {
                 addHistoryAction(albumController.albumTitle, albumController.albumUrl)
             }
 
             albumViewModel.removeAlbum(albumController.album)
-            val removeIndex = browserContainer.indexOf(albumController)
-            val currentIndex = browserContainer.indexOf(state.currentAlbumController)
+            // showAlbum must never deactivate an already destroyed WebView.
+            if (wasCurrent) {
+                albumController.deactivate()
+                state.currentAlbumController = null
+            }
             browserContainer.remove(albumController)
 
             updateSavedAlbumInfo()
@@ -296,10 +305,10 @@ class TabManager(
                 if (!showHome) {
                     activity.finish()
                 } else {
-                    state.ebWebView.loadUrl(config.favoriteUrl)
+                    addAlbum(url = config.favoriteUrl)
                 }
             } else {
-                if (removeIndex == currentIndex) {
+                if (wasCurrent) {
                     showAlbum(browserContainer[getNextAlbumIndexAfterRemoval(removeIndex)])
                 } else {
                     syncFocusIndexToCurrentAlbum()

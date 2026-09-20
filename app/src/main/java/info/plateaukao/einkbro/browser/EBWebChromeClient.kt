@@ -34,23 +34,28 @@ class EBWebChromeClient(
 ) : WebChromeClient() {
     private val TAG: String = "EBWebChromeClient"
 
-    private lateinit var webviewParent: ViewGroup
-
     override fun onCreateWindow(
         view: WebView,
         dialog: Boolean,
         userGesture: Boolean,
         resultMsg: Message,
     ): Boolean {
+        val webviewParent = ebWebView.parent as? ViewGroup ?: return false
         val newWebView = WebView(view.context).apply { initWebView(this) }
+        var popupClosed = false
+        fun closePopup() {
+            if (popupClosed) return
+            popupClosed = true
+            (newWebView.parent as? ViewGroup)?.removeView(newWebView)
+            newWebView.destroy()
+        }
         newWebView.webViewClient = object : WebViewClient() {
             private var isUrlProcessed = false
 
             // A dead popup renderer must not take the app down; just drop the popup.
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
-                (view.parent as? ViewGroup)?.removeView(view)
-                view.destroy()
+                closePopup()
                 return true
             }
 
@@ -58,6 +63,7 @@ class EBWebChromeClient(
                 view: WebView?,
                 request: WebResourceRequest?,
             ): Boolean {
+                if (popupClosed || isUrlProcessed) return true
                 val urlString = request?.url?.toString() ?: return false
 
                 if (urlString.startsWith("blob:")) {
@@ -81,7 +87,9 @@ class EBWebChromeClient(
                             webView = ebWebView,
                         )
                     }
-                    view?.post { webviewParent.removeView(view) }
+                    isUrlProcessed = true
+                    newWebView.visibility = View.GONE
+                    newWebView.post { closePopup() }
                     return true
                 }
 
@@ -89,22 +97,22 @@ class EBWebChromeClient(
                 return if (isGoogleLoginUrl(urlString) || isFacebookLoginUrl(urlString)) {
                     view?.loadUrl(urlString)
                     true
-                } else if (!isUrlProcessed) {
-                    request.url?.let {
-                        handleWebViewLinks(urlString)
-                        isUrlProcessed = true
-                    } // you can get your target url here
-                    false
-                } else false
+                } else {
+                    // This popup only transports the URL to a managed tab. Leaving
+                    // it attached loads a duplicate page over the original tab.
+                    isUrlProcessed = true
+                    newWebView.visibility = View.GONE
+                    newWebView.post { closePopup() }
+                    handleWebViewLinks(urlString)
+                    true
+                }
             }
         }
         newWebView.webChromeClient = object : WebChromeClient() {
             override fun onCloseWindow(window: WebView?) {
-                webviewParent.removeView(window)
+                closePopup()
             }
         }
-        if (ebWebView.parent == null) return false
-        webviewParent = ebWebView.parent as ViewGroup
         webviewParent.addView(newWebView)
 
         val transport = resultMsg.obj as WebViewTransport

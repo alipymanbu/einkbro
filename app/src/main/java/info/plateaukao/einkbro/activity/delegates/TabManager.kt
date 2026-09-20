@@ -239,9 +239,8 @@ class TabManager(
 
         val mainContentLayout = state.mainContentLayout
         val controllerView = controller as View
-        // Re-parenting a Chromium WebView is a full detach/attach cycle; a tab
-        // that is already a (GONE) child only needs its visibility flipped.
-        // Z-order doesn't matter since every sibling is GONE.
+        // Keep attached tabs attached, but restore their stacking order below:
+        // website popup WebViews can also be children of this layout.
         if (controllerView.parent !== mainContentLayout) {
             (controllerView.parent as? ViewGroup)?.removeView(controllerView)
             mainContentLayout.addView(
@@ -253,6 +252,7 @@ class TabManager(
             )
         }
         controllerView.visibility = View.VISIBLE
+        controllerView.bringToFront()
 
         state.currentAlbumController = (controller)
         // Activation can load a restored URL and trigger callbacks immediately.

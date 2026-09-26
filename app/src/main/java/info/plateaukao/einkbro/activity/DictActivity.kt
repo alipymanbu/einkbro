@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
-import androidx.activity.viewModels
 import androidx.activity.compose.setContent
 import androidx.fragment.app.FragmentActivity
 import info.plateaukao.einkbro.preference.ConfigManager
@@ -16,10 +15,11 @@ import info.plateaukao.einkbro.util.Constants.Companion.ACTION_DICT
 import info.plateaukao.einkbro.view.dialog.compose.TranslateDialogFragment
 import info.plateaukao.einkbro.viewmodel.TranslationViewModel
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DictActivity : FragmentActivity() {
     private val config: ConfigManager by inject()
-    private val translationViewModel: TranslationViewModel by viewModels()
+    private val translationViewModel: TranslationViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {}
